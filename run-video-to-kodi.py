@@ -297,28 +297,30 @@ else:
 
 
 
-f_7 = ""
+s_7 = set()
 
 
-## Look for the first line that doesn't start "#":
+## Look for any non-empty line that doesn't start "#":
 #
 for line in s_5.splitlines():
-  if len(line) > 0:
-    if line[0] != '#':
-      f_7 = line
-      break
+  if len(line) > 0 and line[0] != '#':
+    s_7.add(line)
 
 
 
 
-if f_7 == "":
+if len(s_7) == 0:
   print("Have not found a content")
   sys.exit(0)
+elif len(s_7) == 1:
+  # Exactly one piece of content pointed to. Send that piece to Kodi, it works
+  # better to do that way
+  SEND_1 = urllib.parse.urljoin(f_6, next(iter(s_7)))
+else:
+  # More than one piece of content. We have no choice but to send the whole thing
+  SEND_1 = f_6
 
 
-
-
-SEND_1 = urllib.parse.urljoin(f_6, f_7)
 
 
 
