@@ -24,7 +24,7 @@ import browser_cookie3
 ## Define the Debug variable. If true it doesn't access the website, but just
 #  reads from files
 #
-DEBUG = True
+DEBUG = False
 
 
 ## Open the settings file
@@ -210,4 +210,47 @@ else:
   with open(date_val + "_4.txt", "w") as f4:
     f4.write(s_4.decode('latin_1'))
 
+
+
+## At this point, should parse the contents for the desired resolution, read the
+#  new file and get the final URL. However we know the result so skip that.
+#
+#  Send directly to Kodi
+
+
+
+SEND_1 = urllib.parse.urljoin(content_links[0], "media-3/media.ts")
+
+
+
+if True:
+
+  q = http.client.HTTPConnection(settings["kodi_ip"], port=8080)
+  print(q)
+
+
+  user = "kodi"
+  password = ""
+  if len(password)>0:
+    headers = {
+        "Authorization": "Basic {}".format(
+            b64encode(bytes(f"{user}:{password}", "utf-8")).decode("ascii")
+        ),
+        "Content-Type": "application/json"
+    }
+  else:
+    headers = {
+        "Authorization": "Basic {}".format(
+            b64encode(bytes(f"{user}", "utf-8")).decode("ascii")
+        ),
+        "Content-Type": "application/json"
+    }
+
+  q.request("POST", "/jsonrpc", '{"jsonrpc":"2.0","method":"Playlist.Add","params":{"playlistid":1,"item":{"file":"' + SEND_1 + '"}},"id":1}', {"Content-Type": "application/json"})
+
+  y = q.getresponse()
+  print(y.read())
+
+
+  q.close()
 

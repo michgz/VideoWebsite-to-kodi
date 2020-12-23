@@ -3,5 +3,5 @@
 	"website": "https://www.example.com",
 	"kodi_ip": "192.168.0.1",
 	"keywords": [ "MATCH" ],
-	"preferred_resolution": "1280x800"
+	"preferred_resolution": "960x540"
 }
