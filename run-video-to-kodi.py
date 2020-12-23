@@ -244,20 +244,83 @@ else:
   opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
   r_4 = opener.open(content_links[0])
 
-  s_4 = r_4.read()
+  s_4 = r_4.read().decode('latin-1')
   with open(date_val + "_4.txt", "w") as f4:
-    f4.write(s_4.decode('latin_1'))
+    f4.write(s_4)
 
 
 
-## At this point, should parse the contents for the desired resolution, read the
-#  new file and get the final URL. However we know the result so skip that.
+## Parse the contents to get the right resolution
 #
-#  Send directly to Kodi
+f_5 = ""
+
+found_line = False
+
+for line in s_4.splitlines():
+  if line[:18] == "#EXT-X-STREAM-INF:":
+    if line.find("RESOLUTION=" + settings["preferred_resolution"]) >= 0:
+      found_line = True
+  else:
+    if found_line:
+      f_5 = line
+      break
+    found_line = False
+
+
+if len(f_5) <= 0:
+  print("Haven't found the right resolution")
+  sys.exit(0)
 
 
 
-SEND_1 = urllib.parse.urljoin(content_links[0], "media-3/media.ts")
+f_6 = urllib.parse.urljoin(content_links[0], f_5)
+
+
+
+## Read the file
+#
+if DEBUG:
+  
+  NAME_5 = "20201223_105208_5.txt"
+  
+  with open(NAME_5, 'r') as f5:
+    s_5 = f5.read()
+
+else:
+
+  opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
+  r_5 = opener.open(f_6)
+
+  s_5 = r_5.read().decode('latin_1')
+  with open(date_val + "_5.txt", "w") as f5:
+    f5.write(s_5)
+
+
+
+s_7 = set()
+
+
+## Look for any non-empty line that doesn't start "#":
+#
+for line in s_5.splitlines():
+  if len(line) > 0 and line[0] != '#':
+    s_7.add(line)
+
+
+
+
+if len(s_7) == 0:
+  print("Have not found a content")
+  sys.exit(0)
+elif len(s_7) == 1:
+  # Exactly one piece of content pointed to. Send that piece to Kodi, it works
+  # better to do that way
+  SEND_1 = urllib.parse.urljoin(f_6, next(iter(s_7)))
+else:
+  # More than one piece of content. We have no choice but to send the whole thing
+  SEND_1 = f_6
+
+
 
 
 
