@@ -114,6 +114,14 @@ soup = BeautifulSoup(s_2, 'html.parser')
 
 
 
+## Only authenticated users get a navbar. This is very website-dependent
+#
+if len(soup.find_all('spark-navbar')) < 1:
+  print("You appear to not be logged in. Maybe sort that out first...")
+
+
+
+
 ## Go through finding all the card decks that seem to contain a video
 #
 decks = []
