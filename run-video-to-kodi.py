@@ -75,16 +75,46 @@ soup_1 = BeautifulSoup(s_1, 'html.parser')
 #
 links = []
 
-for link in soup_1.find_all('a'):
-  for x in link.children:
-    s = x.string
-    if s != None:
-      if s.upper().find(settings["keywords"][0])>=0:
-        print(link.get('href'))
-        links.append(link.get('href'))
+for i in range(len(settings["keywords"])):
+
+  links_page_specific = []
+
+  for link in soup_1.find_all('a'):
+    for x in link.children:
+      s = x.string
+      if s != None:
+        if s.upper().find(settings["keywords"][i])>=0:
+          print(link.get('href'))
+          links_page_specific.append(link.get('href'))
+          
+  links.append(links_page_specific)
 
 
 if len(links) <= 0:
+  print("No keywords. Exiting ...")
+  sys.exit(0)
+
+j_s = 1
+
+if len(links) > 1:
+  # Need to let the user select one
+  
+  for j in range(len(settings["keywords"])):
+    print("[{0:2d}]  :  {1}".format(j+1, settings["keywords"][j]))
+    
+    
+  print("Enter number to send (or anything else to cancel):")
+
+  s = input()
+
+  try:
+    j_s = int(s)
+  except ValueError:
+    j_s = 1 # -1
+
+
+
+if len(links[j_s-1]) <= 0:
   print("Didn't find any links. Exiting ...")
   sys.exit(0)
 
@@ -103,7 +133,7 @@ if DEBUG:
 else:
 
   opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
-  r_2 = opener.open(urllib.parse.urljoin(settings["website"], links[0]))  # Just use the first link
+  r_2 = opener.open(urllib.parse.urljoin(settings["website"], links[j_s-1][0]))   # Just use the first link
 
   s_2 = r_2.read()
   with open(date_val + "_2.txt", "w") as f2:
